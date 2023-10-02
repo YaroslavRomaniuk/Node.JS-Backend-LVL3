@@ -1,7 +1,7 @@
 type DialogButtonType = "Yes" | "No";
 
 interface FormButton {
-    type: "Add" | "Remove" | "Buy"
+  type: "Add" | "Remove" | "Buy"
 }
 
 // задача 1: создайте тип AnyButtonType, который описывает все вариации кнопок
@@ -49,25 +49,72 @@ type ConfirmationHandlingFormButton = {
 //   то добавляем сумму его полей (привет рекурсия)
 // - если мы натыкаемся на undefined, или же если cvalue был строкой которая по факту не являлась адекватным числом - 
 //   то тогда значением будет 2022.
-  
+
 // например, для { hello: {cvalue: 1}, world: { cvalue: { yay: { cvalue: "2" } } } } 
 // должно вернуться 3
 
-type Values = string|number|object|undefined
+// Скоро дадим вам функцию, но она немного багонутая. 
+// Попробуйте найти в ней все баги самостоятельно без запуска этого кода. 
+// Когда вы увидели все баги и готовы их исправлять, то сделайте это (НО НЕ НАДО ПЕРЕПИСЫВАТЬ С НУЛЯ :)) ), 
+// и когда будете уверены что функция работает ок - можете попробовать запустить ее и потестить. 
+// Перед запуском изучите, что ваш любимый редактор подсвечивает в коде. 
+// Нашел ли он какие-то ошибки?
+// Если допустить, что все-таки вы пропустили ряд ошибок, то время протестировать тайпскрипт.
+
+// 1) сложный этап. напишите нормальную тайпскриптовую сигнатуру функции 
+// (отдельно опишите тип первого аргумента в виде interface)
+
+// 2) если не получилось, смотрите спойлер: https://pastebin.com/2nEJvk04
+
+// 3) пользуясь силой тайпскрипта и описанной сигнатуры, 
+// найдите как можно больше ошибок, которых не нашли раньше. 
+// По мере фикса кода, обнаруживайте еще ошибки на шару в процессе кодинга, 
+// без запуска программы.
+// результат скиньте @roman
+
+// ... а вот и код багонутой функции:
 
 
-interface MyObject {
-  [key:string]: Values | {cvalue:Values};
+type Values = string | number | BigObject | undefined
+
+interface BigObject {
+  [key: string]: { cvalue: Values } | undefined;
 }
 
 
+function sumCValue(objectCalc: BigObject) {
+  const keysArr = Object.keys(objectCalc).map((currentKey) => {
+    const currentElement = objectCalc[currentKey];
 
-function calcCvalue (myObject: MyObject) {
+    console.log(typeof currentElement)
 
-  if (typeof(myObject.cvalue) === 'number'){
-      console.log("its numbeeeeer!")
-  } else if (typeof(myObject.cvalue) === 'string'){
-      console.log('strrrrrriiiing')
+    if (typeof currentElement === 'undefined')  return 2021;
+    if (currentElement && typeof currentElement.cvalue === 'string') return +currentElement.cvalue || '2021';
+    if (currentElement.cvalue && isBigObject(currentElement.cvalue))  return sumCValue(currentElement.cvalue);
+    return currentElement.cvalue;
+  });
+
+
+  let sum = 0;
+  for (let i = 0; i < keysArr.length; i++) {
+      sum += keysArr[i].cvalue;
   }
+  return sum;
 
+  return keysArr;
 }
+
+
+function isBigObject( object: BigObject | number | string) {
+  return (object as BigObject).cvalue !== undefined;
+}
+
+
+
+//console.log(sumCValue({ undefined }));
+
+
+
+//console.log(sumCValue({ cvalue: { cvalue: 2 } }));
+
+console.log(isBigObject({ cvalue: { cvalue: 2 } }))
