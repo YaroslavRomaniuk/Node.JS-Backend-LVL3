@@ -82,31 +82,36 @@ interface BigObject {
 }
 
 
-function sumCValue(objectCalc: BigObject) {
-  const keysArr = Object.keys(objectCalc).map((currentKey) => {
+function sumCValue(objectCalc: BigObject) : number {
+  const keysArr: number[] = Object.keys(objectCalc).map((currentKey) : number => {
     const currentElement = objectCalc[currentKey];
 
-    console.log(typeof currentElement)
+    console.log(currentElement)
 
     if (typeof currentElement === 'undefined')  return 2021;
-    if (currentElement && typeof currentElement.cvalue === 'string') return +currentElement.cvalue || '2021';
-    if (currentElement.cvalue && isBigObject(currentElement.cvalue))  return sumCValue(currentElement.cvalue);
-    return currentElement.cvalue;
+    if (currentElement && typeof currentElement.cvalue === 'string') return parseInt(currentElement.cvalue) || 2021;
+    if (typeof currentElement.cvalue === 'number')  return currentElement.cvalue;
+    if (currentElement.cvalue && isBigObject(currentElement.cvalue)) return sumCValue(currentElement.cvalue);
+    return 0; // Added default return value
   });
 
+  console.log(keysArr)
 
-  let sum = 0;
+  let sum:number = 0;
   for (let i = 0; i < keysArr.length; i++) {
-      sum += keysArr[i].cvalue;
+    if (typeof keysArr[i] !== 'undefined'){
+      sum += keysArr[i];
+    }  
   }
   return sum;
-
-  return keysArr;
 }
 
 
-function isBigObject( object: BigObject | number | string) {
-  return (object as BigObject).cvalue !== undefined;
+function isBigObject(obj: any): obj is BigObject {
+  // check if every key in the object has a property 'cvalue'
+  return Object.values(obj).every(
+    (value) => value !== null && typeof value === 'object' && 'cvalue' in value
+  );
 }
 
 
@@ -115,6 +120,21 @@ function isBigObject( object: BigObject | number | string) {
 
 
 
-//console.log(sumCValue({ cvalue: { cvalue: 2 } }));
+//console.log(sumCValue({ hello: {cvalue: 1} }));
 
-console.log(isBigObject({ cvalue: { cvalue: 2 } }))
+console.log(sumCValue({ hello: {cvalue: 1}, world: { cvalue: { yay: { cvalue: "2" } } } }));
+
+//console.log(isBigObject({ cvalue: { cvalue: 2 } }))
+
+//console.log(isBigObject({ hello: {cvalue: 1}, world: { cvalue: { yay: { cvalue: "2" } } } }))
+
+
+//let test = 1;
+
+
+//console.log (typeof test);
+
+
+//let test2 = '1'
+
+//console.log (typeof test2);
