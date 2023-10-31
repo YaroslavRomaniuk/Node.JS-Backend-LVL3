@@ -197,3 +197,14 @@ function наштамповать<T>(SOMECLASS: new () => T, count:number)  {
 
 let a: Rectangle[] = наштамповать(Rectangle, 10);
 let b: Circle[] = наштамповать(Circle, 20)
+
+
+
+
+function sayHelloWorld(world:string){
+  return `Hello ${world}`;
+}
+
+console.log(sayHelloWorld(`ss`))
+
+console.log('dawdawdawd')
