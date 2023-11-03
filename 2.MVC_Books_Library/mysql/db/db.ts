@@ -1,5 +1,6 @@
 import mysql from 'mysql2/promise';
 import dotenv from 'dotenv';
+import fs from 'fs/promises';
 
 // Load environment variables from .env file
 dotenv.config();
@@ -37,4 +38,24 @@ export const getDBMySQL = (): mysql.Connection => {
   }
   // Otherwise, return the connection
   return dbConnection;
+};
+
+export const setupDatabase = async () => {
+  try {
+    const connection = await mysql.createConnection({
+      host: process.env.MYSQL_HOST,
+      user: process.env.MYSQL_USER,
+      password: process.env.MYSQL_PASSWORD,
+      database: process.env.MYSQL_DATABASE,
+      multipleStatements: true
+    });
+
+    const data = await fs.readFile('./mysql/sql/init.sql', 'utf8');
+
+    await connection.query(data);
+
+    console.log('Tables have been created successfully.');
+  } catch (err) {
+    console.error('An error occurred:', err);
+  }
 };
