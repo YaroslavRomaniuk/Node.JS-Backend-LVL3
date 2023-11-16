@@ -10,21 +10,14 @@ dotenv.config();
 
 const server = express();
 server.set('view engine', 'ejs');
-server.set('views', path.join(__dirname, 'src/views'));
-
-console.log(path.join(__dirname, 'src/views'))
-//server.use(express.static('./static/books/books-page', { index: 'books-page.html' })); 
-server.use('/book/books-page_files', express.static(path.join(__dirname, 'src/views/books-page_files')));
-server.use('/books-page_files', express.static(path.join(__dirname, 'src/views/books-page_files')));
-server.use('/book/book-page_files', express.static(path.join(__dirname, 'src/views/book-page_files')));
-console.log(path.join(__dirname, 'src/views/books-page_files'));
-console.log(__dirname)
+server.set('views', path.join(__dirname, 'views'));
+server.use(express.static(path.join(__dirname, "static")));
 server.use(express.json());
 
 
 server.get('/qqq', (req, res) => {
     console.log("buuuubaaa")
-    const booksFilePath = './src/views/books.json';
+    const booksFilePath = './views/books.json';
     fs.readFile(booksFilePath, 'utf8', (err, data) => {
         if (err) {
             console.error("Error reading file: ", err);
@@ -37,19 +30,7 @@ server.get('/qqq', (req, res) => {
 });
 
 
-server.get('/books', (req, res) => {
-    //console.log("buuuubaaa")
-    const booksFilePath = './src/views/books-page.json';
-    fs.readFile(booksFilePath, 'utf8', (err, data) => {
-        if (err) {
-            console.error("Error reading file: ", err);
-            res.status(500).send("Error reading file");
-        } else {
-            const books = JSON.parse(data);
-            res.render('books-page', { books: books });
-        }
-    });
-});
+
 
 interface Book {
 
@@ -71,10 +52,22 @@ interface Book {
 
 }
 
+server.get('/books', (req, res) => {
+    const booksFilePath = './views/books-page.json';
+    fs.readFile(booksFilePath, 'utf8', (err, data) => {
+        if (err) {
+            console.error("Error reading file: ", err);
+            res.status(500).send("Error reading file");
+        } else {
+            const books = JSON.parse(data);
+            res.render('books-page', { books: books });
+        }
+    });
+});
+
 
 server.get('/book/:id', (req, res) => {
-    //console.log("buuuubaa")
-    const booksFilePath = './src/views/books-page.json';
+    const booksFilePath = './views/books-page.json';
     fs.readFile(booksFilePath, 'utf8', (err, data) => {
         if (err) {
             console.error("Error reading file: ", err);
