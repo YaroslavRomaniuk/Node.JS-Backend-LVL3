@@ -84,6 +84,20 @@ server.get('/book/:id', (req, res) => {
     });
 });
 
+
+server.get('/admin', (req, res) => {
+    const booksFilePath = './views/books-page.json';
+    fs.readFile(booksFilePath, 'utf8', (err, data) => {
+        if (err) {
+            console.error("Error reading file: ", err);
+            res.status(500).send("Error reading file");
+        } else {
+            const books = JSON.parse(data);
+            res.render('admin', { books: books });
+        }
+    });
+});
+
 mySQLConnection(server);
 setupDatabase();
 
