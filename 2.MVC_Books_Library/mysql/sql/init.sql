@@ -1,11 +1,15 @@
 CREATE TABLE IF NOT EXISTS Books (
     book_id INT AUTO_INCREMENT,
-    book_name VARCHAR(255),
+    book_title VARCHAR(255),
     book_year INT,
     pages_quantity INT,
+    isbn VARCHAR(20),
+    book_description TEXT,
+    image VARCHAR(255),
     is_deleted BOOLEAN,
     PRIMARY KEY (book_id)
 );
+
 CREATE TABLE IF NOT EXISTS Authors (
     author_id INT AUTO_INCREMENT,
     author_name VARCHAR(255),
