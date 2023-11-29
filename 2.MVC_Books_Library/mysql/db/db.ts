@@ -56,7 +56,7 @@ export const setupDatabase = async () => {
 
     const dataBooks = await fs.readFile('./mysql/sql/books.sql', 'utf8');
 
-    await connection.query(dataBooks);
+   // await connection.query(dataBooks);
 
     console.log('Tables have been created successfully.');
   } catch (err) {

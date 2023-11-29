@@ -6,7 +6,7 @@ const MySQLStore = require('express-mysql-session')(session);
 // Function to setup MySQL connection and session store
 export default function mySQLConnection(server: Express) {
     const port = process.env.PORT;
-
+    let db;
     // Connect to MySQL database
     connectMySQLdb((err?: Error) => {
         if (!err) {
@@ -19,7 +19,9 @@ export default function mySQLConnection(server: Express) {
             });
 
             // Get the database connection
-            const db = getDBMySQL();
+            db = getDBMySQL();
+            
+            
         } else {
             // If there is an error when connecting to the database, log the error
             console.log(`DB connection error: ${err}`);
@@ -49,4 +51,6 @@ export default function mySQLConnection(server: Express) {
         resave: false,
         saveUninitialized: false
     }));
+
+    return db;
 }

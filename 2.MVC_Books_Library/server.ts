@@ -4,7 +4,7 @@ import { setupDatabase, getDBMySQL } from './mysql/db/db';
 import dotenv from 'dotenv';
 import fs from 'fs';
 import path from 'path';
-
+import { Connection } from 'mysql2/promise';
 
 dotenv.config();
 
@@ -66,6 +66,7 @@ server.get('/', (req, res) => {
 });
 
 
+/** 
 server.get('/book/:id', (req, res) => {
     const booksFilePath = './views/books-page.json';
     fs.readFile(booksFilePath, 'utf8', (err, data) => {
@@ -83,6 +84,7 @@ server.get('/book/:id', (req, res) => {
         }
     });
 });
+*/
 
 
 server.get('/admin', (req, res) => {
@@ -98,8 +100,39 @@ server.get('/admin', (req, res) => {
     });
 });
 
-mySQLConnection(server);
-setupDatabase();
+
+
+//setupDatabase();
+let connection: Connection | undefined;
+ connection = mySQLConnection(server);;
+
+
+ server.get('/book/:id', async (req, res) => {
+    let bookId = Number(req.params.id);
+    let books, authors;
+
+    if(connection){
+        // Query to get book
+        [books] = await connection.execute(
+            `SELECT * FROM books WHERE id = ?`, [bookId]
+        );
+
+        console.log("bbbbbbuuuuubbbbbaaaa!!!")
+
+        // Query to get author
+        [authors] = await connection.execute(
+            `SELECT * FROM authors INNER JOIN book_author ON authors.id = book_author.id_author WHERE book_author.id_book = ?`, [bookId]
+        );
+    }
+
+    if (books && books.length > 0) {
+        let book = books[0];
+        book.authors = authors;
+        res.render('book-page', { book: book });
+    } else {
+        res.status(404).send("Book not found");
+    }
+});
 
 
 
