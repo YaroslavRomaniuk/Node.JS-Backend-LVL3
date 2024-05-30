@@ -20,112 +20,118 @@
         <div class="row">
             <!--left side-->
             <div class="col-md-6">
-                <table class="table">
-                    <thead>
-                        <tr>
-                            <th>ID</th>
-                            <th>Book Name</th>
-                            <th>Author</th>
-                            <th>Year</th>
-                            <th>Delete</th>
-                            <th>Click Number</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr>
-                            <td>22</td>
-                            <td>СИ++ И КОМПЬЮТЕРНАЯ ГРАФИКА</td>
-                            <td>Андрей Богуславский</td>
-                            <td>2003</td>
-                            <td><a href="#">Delete</a></td>
-                            <td>0</td>
-                        </tr>
-                        <tr>
-                            <td>23</td>
-                            <td>Программирование на языке Go</td>
-                            <td>Марк Саммерфільд</td>
-                            <td>2013</td>
-                            <td><a href="#">Delete</a></td>
-                            <td>0</td>
-                        </tr>
-                        <tr>
-                            <td>25</td>
-                            <td>Толковый словарь сетевых терминов и аббревиатур</td>
-                            <td>Cisco Systems</td>
-                            <td>2002</td>
-                            <td><a href="#">Delete</a></td>
-                            <td>0</td>
-                        </tr>
-                        <tr>
-                            <td>26</td>
-                            <td>Python for Data Analysis</td>
-                            <td>Вес Маккінні</td>
-                            <td>2012</td>
-                            <td><a href="#">Delete</a></td>
-                            <td>0</td>
-                        </tr>
-                        <tr>
-                            <td>27</td>
-                            <td>Философия Java</td>
-                            <td>Брюс Еккель</td>
-                            <td>1998</td>
-                            <td><a href="#">Delete</a></td>
-                            <td>0</td>
-                        </tr>
-                    </tbody>
-                </table>
+
+                <div class="container"> <!-- or container-fluid -->
+                
+                            <div class="table-responsive">
+                                <table class="table">
+                                    <thead>
+                                        <tr>
+                                            <th>Delete</th>
+                                            <th>ID</th>
+                                            <th>Title</th>
+                                            <th>Author</th>
+                                            <th>Year</th>
+                                            <th>Pages</th>
+                                            <th>ISBN</th>
+                                            <th>View Count</th>
+                                            <th>Click Count</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <% books.forEach((book) => { %>
+                                            <tr>
+                                                <td class="single-line"><a href="/admin/delete_book/<%= book.book_id %>">Delete</a></td>
+                                                <td class="single-line"><%= book.book_id %></td>
+                                                <td class="single-line"><%= book.book_title %></td>
+                                                <td class="single-line"><%= book.author_name %></td>
+                                                <td class="single-line"><%= book.book_year %></td>
+                                                <td class="single-line"><%= book.pages_quantity %></td>
+                                                <td class="single-line"><%= book.isbn %></td>
+                                                <td class="single-line"><%= book.view_count %></td>
+                                                <td class="single-line"><%= book.click_count %></td>
+                                            </tr
+                                        <% }) %>
+                                    </tbody>
+                                </table>
+                            </div>
+                   
+                </div>
+
+                
                 <!--Pagination-->
                 <nav aria-label="Page navigation">
                     <ul class="pagination justify-content-center">
-                        <li class="page-item"><a class="page-link" href="#">Previous</a></li>
-                        <li class="page-item"><a class="page-link" href="#">1</a></li>
-                        <li class="page-item"><a class="page-link" href="#">2</a></li>
-                        <li class="page-item"><a class="page-link" href="#">3</a></li>
-                        <li class="page-item"><a class="page-link" href="#">4</a></li>
-                        <li class="page-item"><a class="page-link" href="#">5</a></li>
-                        <li class="page-item"><a class="page-link" href="#">6</a></li>
-                        <li class="page-item"><a class="page-link" href="#">Next</a></li>
+                
+                        <% const prevPage = Math.max(1, currentPage - 1); %>
+                        <% const nextPage = Math.min(totalPages, currentPage + 1); %>
+                
+                        <!-- Previous Button -->
+                        <li class="page-item <%= currentPage === 1 ? 'disabled' : '' %>">
+                            <a class="page-link" href="<%= currentPage === 1 ? '#' : '/admin/?page=' + prevPage %>">Previous</a>
+                        </li>
+                
+                        <!-- Page Numbers -->
+                        <% for(let i = 1; i <= totalPages; i++) { %>
+                            <li class="page-item <%= currentPage === i ? 'active' : '' %>">
+                                <a class="page-link" href="/admin/?page=<%= i %>"><%= i %></a>
+                            </li>
+                        <% } %>
+                
+                        <!-- Next Button -->
+                        <li class="page-item <%= currentPage === totalPages ? 'disabled' : '' %>">
+                            <a class="page-link" href="<%= currentPage === totalPages ? '#' : '/admin/?page=' + nextPage %>">Next</a>
+                        </li>
+                
                     </ul>
                 </nav>
             </div>
+
+            <script src="/scripts/image_preview/image_preview.js"></script>
+            
             <!--right side-->
             <div class="col-md-6">
-                <form>
+                <form action="/admin/add_book" method="POST" enctype="multipart/form-data">
                     <div class="form-group">
-                        <label>Book Name</label>
-                        <input type="text" class="form-control" name="book_name">
+                      <label>Title</label>
+                      <input type="text" class="form-control" name="book_title" placeholder="Enter book title" required>
                     </div>
                     <div class="form-group">
-                        <label>Year</label>
-                        <input type="text" class="form-control" name="year">
+                      <label>Year</label>
+                      <input type="text" class="form-control" name="book_year" placeholder="Enter publication year">
                     </div>
                     <div class="form-group">
-                        <label>Author Name 1</label>
-                        <input type="text" class="form-control" name="author_name">
-                        <!--Repeat this field for more authors-->
+                      <label>Author Name 1</label>
+                      <input type="text" class="form-control" name="author_name" placeholder="Enter first author name" required>
                     </div>
                     <div class="form-group">
-                        <label>Author Name 2</label>
-                        <input type="text" class="form-control" name="author_name">
-                        <!--Repeat this field for more authors-->
+                      <label>Author Name 2</label>
+                      <input type="text" class="form-control" name="author_name" placeholder="Enter second author name (optional)">
                     </div>
                     <div class="form-group">
-                        <label>Author Name 3</label>
-                        <input type="text" class="form-control" name="author_name">
-                        <!--Repeat this field for more authors-->
+                      <label>Author Name 3</label>
+                      <input type="text" class="form-control" name="author_name" placeholder="Enter third author name (optional)">
                     </div>
                     <div class="form-group">
-                        <label>Description</label>
-                        <textarea class="form-control" name="description"></textarea>
+                      <label>Pages</label>
+                      <input type="text" class="form-control" name="pages_quantity" placeholder="Enter number of pages">
                     </div>
                     <div class="form-group">
-                        <label>Upload Image</label>
-                        <input type="file" class="form-control-file" name="image">
-                        <!--Image preview will be shown here-->
-                        <img id="image_preview" src="#" alt="your image" />
+                      <label>ISBN</label>
+                      <input type="text" class="form-control" name="isbn" placeholder="Enter ISBN number">
+                    </div>
+                    <div class="form-group">
+                      <label>Description</label>
+                      <textarea class="form-control" name="book_description" placeholder="Enter book description"></textarea>
+                    </div>
+                    <div class="form-group">
+                      <label>Upload Image</label>
+                      <input type="file" class="form-control-file" name="image" id="bookImage" accept="image/*" onchange="previewImage();">
+                      <!-- Image preview will be shown here -->
+                      <img id="image_preview" src="#" alt="your image" style="max-width: 200px; display: none;" />
                     </div>
                     <button type="submit" class="btn btn-primary">Add Book</button>
-                </form>
+                  </form>
             </div>
         </div>
     </div>

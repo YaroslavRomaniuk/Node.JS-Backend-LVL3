@@ -1,236 +1,56 @@
 import express from 'express';
-import mySQLConnection from './mysql/db/mySQLConnection';
-import { setupDatabase, getDBMySQL } from './mysql/db/db';
+import { createMySQLPool, setupDatabase, initialDBSetup } from './src/services/mysql/db/db';
 import dotenv from 'dotenv';
-import fs from 'fs';
 import path from 'path';
-import { Connection } from 'mysql2/promise';
+import userRouter from './src/router/default/userRouter';
+import adminRouter from './src/router/default/adminRouter';
+import basicAuth from 'express-basic-auth';
+import './src/services/cron/cron';
 
 dotenv.config();
 
 const server = express();
+
+// Set up view engine
 server.set('view engine', 'ejs');
 server.set('views', path.join(__dirname, 'views'));
-server.use(express.static(path.join(__dirname, "static")));
+
+// Serve static files
+server.use(express.static(path.join(__dirname, 'public')));
+
+// Middleware to parse incoming requests
 server.use(express.json());
+server.use(express.urlencoded({ extended: true }));
 
-
-server.get('/qqq', (req, res) => {
-    console.log("buuuubaaa")
-    const booksFilePath = './views/books.json';
-    fs.readFile(booksFilePath, 'utf8', (err, data) => {
-        if (err) {
-            console.error("Error reading file: ", err);
-            res.status(500).send("Error reading file");
-        } else {
-            const books = JSON.parse(data);
-            res.render('books', { books: books });
-        }
-    });
-});
-
-
-
-
-interface Book {
-
-    id: number;
-
-    title: string;
-
-    author: string;
-
-    year: string;
-
-    image: string;
-
-    pages: string;
-
-    isbn: string;
-
-    about: string;
-
+// Initialize the application
+async function initApp() {
+    try {
+        await initialDBSetup();
+        await createMySQLPool();
+        await setupDatabase();
+    } catch (error) {
+        console.error('Error during app initialization:', error);
+        process.exit(1); // Exit the process with failure
+    }
 }
 
-server.get('/', (req, res) => {
-    const booksFilePath = './views/books-page.json';
-    fs.readFile(booksFilePath, 'utf8', (err, data) => {
-        if (err) {
-            console.error("Error reading file: ", err);
-            res.status(500).send("Error reading file");
-        } else {
-            const books = JSON.parse(data);
-            res.render('books-page', { books: books });
-        }
-    });
+// Start the initialization
+initApp().catch(console.error);
+
+const port = process.env.PORT
+
+// Start the server
+server.listen(3000, () => {
+    console.log(`Server is running at http://localhost:${port}`);
 });
 
+// Routes
+server.use('/', userRouter);
 
-/** 
-server.get('/book/:id', (req, res) => {
-    const booksFilePath = './views/books-page.json';
-    fs.readFile(booksFilePath, 'utf8', (err, data) => {
-        if (err) {
-            console.error("Error reading file: ", err);
-            res.status(500).send("Error reading file");
-        } else {
-            const books = JSON.parse(data);
-            let book: Book | undefined = books.find((book: Book) => book.id === Number(req.params.id));
-            if (book) {
-                res.render('book-page', { book: book });
-            } else {
-                res.status(404).send("Book not found");
-            }
-        }
-    });
-});
-*/
-
-
-server.get('/admin', (req, res) => {
-    const booksFilePath = './views/books-page.json';
-    fs.readFile(booksFilePath, 'utf8', (err, data) => {
-        if (err) {
-            console.error("Error reading file: ", err);
-            res.status(500).send("Error reading file");
-        } else {
-            const books = JSON.parse(data);
-            res.render('admin', { books: books });
-        }
-    });
+const auth = basicAuth({
+    users: { 'admin': 'admin' },
+    challenge: true
 });
 
-
-
-//setupDatabase();
-let connection: Connection | undefined;
- connection = mySQLConnection(server);;
-
-
- server.get('/book/:id', async (req, res) => {
-    let bookId = Number(req.params.id);
-    let books, authors;
-
-    if(connection){
-        // Query to get book
-        [books] = await connection.execute(
-            `SELECT * FROM books WHERE id = ?`, [bookId]
-        );
-
-        console.log("bbbbbbuuuuubbbbbaaaa!!!")
-
-        // Query to get author
-        [authors] = await connection.execute(
-            `SELECT * FROM authors INNER JOIN book_author ON authors.id = book_author.id_author WHERE book_author.id_book = ?`, [bookId]
-        );
-    }
-
-    if (books && books.length > 0) {
-        let book = books[0];
-        book.authors = authors;
-        res.render('book-page', { book: book });
-    } else {
-        res.status(404).send("Book not found");
-    }
-});
-
-
-
-/** 
-// DB books load
-
-async function main() {
-    // Connect to the database.
-    const connection = getDBMySQL();
-
-    // Read the JSON file.
-    const data: string = fs.readFileSync('books.json', 'utf8');
-
-    // Parse the JSON data.
-    const books: any[] = JSON.parse(data);
-
-    // For each book...
-    for (const book of books) {
-        // Check if the book already exists in the database.
-        const [rows] = await connection.execute(
-            'SELECT * FROM Books WHERE book_id = ?',
-            [book.id]
-        );
-
-        // If the book doesn't exist...
-        if (rows.length === 0) {
-            // Insert the book into the database.
-            await connection.execute(
-                'INSERT INTO Books (book_id, book_title, book_year, pages_quantity, isbn, book_description, image, is_deleted) VALUES (?, ?, ?, ?, ?, ?, ?, ?)',
-                [book.id, book.title, book.year, book.pages, book.isbn, book.description, book.image, book.is_deleted]
-            );
-
-            // Assuming the "author" field contains a single author name.
-            // If the "author" field can contain multiple author names, you'll need to split it and insert each author separately.
-            const [authorRow] = await connection.execute(
-                'SELECT * FROM Authors WHERE author_name = ?',
-                [book.author]
-            );
-
-            let authorId: number;
-
-            if (authorRow.length === 0) {
-                const [result] = await connection.execute(
-                    'INSERT INTO Authors (author_name) VALUES (?)',
-                    [book.author]
-                );
-
-                authorId = result.insertId;
-            } else {
-                authorId = authorRow[0].author_id;
-            }
-
-            // Insert the relationship into the Book_Author table.
-            await connection.execute(
-                'INSERT INTO Book_Author (book_id, author_id) VALUES (?, ?)',
-                [book.id, authorId]
-            );
-        }
-    }
-
-    // Close the connection.
-    await connection.end();
-}
-
-main();
-*/
-
-
-
-// Read the JSON file.
-const data = fs.readFileSync('books.json', 'utf8');
-
-// Parse the JSON data.
-const books = JSON.parse(data);
-
-// Start the SQL script with a command to use the correct database.
-let sql = 'USE mvc_library;\n';
-
-// For each book...
-for (const book of books) {
-    // Create an INSERT statement for the Books table.
-    sql += `INSERT INTO Books (book_id, book_title, book_year, pages_quantity, isbn, book_description, image, is_deleted)\n`;
-    sql += `VALUES (${book.id}, '${book.title}', ${book.year}, ${book.pages}, '${book.isbn}', '${book.description.replace(/'/g, "''")}', '${book.image}', ${book.is_deleted});\n`
-
-    // Create an INSERT statement for the Authors table. 
-    // This assumes the author does not already exist in the table.
-    // If the author might exist already, you would need to handle this differently.
-    sql += `INSERT INTO Authors (author_name)\n`;
-    sql += `VALUES ('${book.author.replace(/'/g, "''")}');\n`
-
-    // Get the last inserted author_id.
-    sql += `SET @last_author_id = LAST_INSERT_ID();\n`;
-
-    // Create an INSERT statement for the Book_Author table.
-    sql += `INSERT INTO Book_Author (book_id, author_id)\n`;
-    sql += `VALUES (${book.id}, @last_author_id);\n\n`
-}
-
-// Write the SQL script to a file.
-fs.writeFileSync('books.sql', sql);
+server.use('/admin/', auth, adminRouter);
 

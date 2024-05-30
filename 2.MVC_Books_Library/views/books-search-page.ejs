@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="ru">
+
+<head>
+    <%- include('./includes/head'); %>
+</head>
+
+
+<body data-gr-c-s-loaded="true" class="">
+
+    <%- include('./includes/header_search'); %>
+        <section id="main" class="main-wrapper">
+            <div class="container">
+                <div id="content" class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
+                    <% books.forEach((book)=> { %>
+                        <div data-book-id="<%= book.book_id %>" class="book_item col-xs-6 col-sm-3 col-md-2 col-lg-2">
+                            <div class="book">
+                                <a href="http://localhost:3000/book/<%= book.book_id %>">
+                                    <img src="<%= book.image %>" alt="<%= book.book_title %>">
+                                    <div data-title="<%= book.book_title %>" class="blockI" style="height: 46px;">
+                                        <div data-book-title="<%= book.book_title %>" class="title size_text">
+                                            <%= book.book_title %>
+                                        </div>
+                                        <div data-book-author="<%= book.author_name %>" class="author">
+                                            <%= book.author_name %>
+                                        </div>
+                                    </div>
+                                </a>
+                                <a href="http://localhost:3000/book/<%= book.book_id %>">
+                                    <button type="button" class="details btn btn-success">Читать</button>
+                                </a>
+                            </div>
+                        </div>
+                        <% }) %>
+                </div>
+            </div>
+        </section>
+
+        <%- include('./includes/footer'); %>
+
+</body>
+
+</html>

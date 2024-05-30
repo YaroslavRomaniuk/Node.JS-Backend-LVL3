@@ -3,6 +3,7 @@
 
 <head>
     <%- include('./includes/head'); %>
+
 </head>
 
 
@@ -10,17 +11,17 @@
 
 <body data-gr-c-s-loaded="true" class="">
     <%- include('./includes/header'); %>
-    <section id="main" class="main-wrapper">
-        <div class="container">
-            <div id="content" class="book_block col-xs-12 col-sm-12 col-md-12 col-lg-12">
-                
-                <script id="pattern" type="text/template">
-                    <div data-book-id="<%= book.id %>" class="book_item col-xs-6 col-sm-3 col-md-2 col-lg-2">
+        <section id="main" class="main-wrapper">
+            <div class="container">
+                <div id="content" class="book_block col-xs-12 col-sm-12 col-md-12 col-lg-12">
+
+                    <script id="pattern" type="text/template">
+                    <div data-book-id="<%= book.book_id %>" class="book_item col-xs-6 col-sm-3 col-md-2 col-lg-2">
                         <div class="book">
-                            <a href="/book/<%= book.id %>"><img src="<%= book.image %>" alt="<%= book.title %>">
-                                <div data-title="<%= book.title %>" class="blockI">
-                                    <div data-book-title="<%= book.title %>" class="title size_text"><%= book.title %></div>
-                                    <div data-book-author="<%= book.author %>" class="author"><%= book.author %></div>
+                            <a href="/book/<%= book.book_id %>"><img src="<%= book.image %>" alt="<%= book.book_title %>">
+                                <div data-title="<%= book.book_title %>" class="blockI">
+                                    <div data-book-title="<%= book.book_title %>" class="title size_text"><%= book.book_title %></div>
+                                    <div data-book-author="<%= book.author_name %>" class="author"><%= book.author_name %></div>
                                 </div>
                             </a>
                             <a href="/book/{id}">
@@ -29,87 +30,113 @@
                         </div>
                     </div>
                 </script>
-                <div id="id" book-id="<%= book.id %>">
-                    <div id="bookImg" class="col-xs-12 col-sm-3 col-md-3 item" style="
+                    <div id="id" book-id="<%= book.book_id %>">
+                        <div id="bookImg" class="col-xs-12 col-sm-3 col-md-3 item" style="
     margin:5;
-"><img src=".<%= book.image %>" alt="Responsive image" class="img-responsive">
-                        
-                        <hr>
-                    </div>
-                    <div class="col-xs-12 col-sm-9 col-md-9 col-lg-9 info">
-                        <div class="bookInfo col-md-12">
-                            <div id="title" class="titleBook"><%= book.title %></div>
+"><img src="<%= book.image %>" alt="Responsive image" class="img-responsive">
+
+                            <hr>
                         </div>
-                        <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
-                            <div class="bookLastInfo">
-                                <div class="bookRow"><span class="properties">автор:</span><span id="author"><%= book.author %></span></div>
-                                <div class="bookRow"><span class="properties">год:</span><span id="year"><%= book.year %></span></div>
-                                <div class="bookRow"><span class="properties">страниц:</span><span id="pages"><%= book.pages %></span></div>
-                                <div class="bookRow"><span class="properties">isbn:</span><span id="isbn"><%= book.isbn %></span></div>
+                        <div class="col-xs-12 col-sm-9 col-md-9 col-lg-9 info">
+                            <div class="bookInfo col-md-12">
+                                <div id="title" class="titleBook">
+                                    <%= book.book_title %>
+                                </div>
+                            </div>
+                            <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
+                                <div class="bookLastInfo">
+                                    <div class="bookRow"><span class="properties">автор:</span><span id="author">
+                                            <%= book.author_name %>
+                                        </span></div>
+                                    <div class="bookRow"><span class="properties">год:</span><span id="year">
+                                            <%= book.book_year %>
+                                        </span></div>
+                                    <div class="bookRow"><span class="properties">страниц:</span><span id="pages">
+                                            <%= book.pages_quantity %>
+                                        </span></div>
+                                    <div class="bookRow"><span class="properties">isbn:</span><span id="isbn">
+                                            <%= book.isbn %>
+                                        </span></div>
+                                </div>
+                            </div>
+
+
+                            <div class="btnBlock col-xs-12 col-sm-12 col-md-12">
+                                <button type="button" class="btn-lg btn btn-success" data-toggle="modal"
+                                    data-target="#bookModal">Хочу читать!</button>
+                            </div>
+
+
+
+                            <div class="modal" id="bookModal" tabindex="-1" role="dialog" aria-labelledby="modalLabel"
+                                aria-hidden="true">
+                                <div class="modal-dialog" role="document">
+                                    <div class="modal-content">
+                                        <div class="d-flex justify-content-center align-items-center">
+                                            <img class="modal-img" id="okImage" src="/images_and_styles/greenTick.png"
+                                                alt="Green tick" style="max-width: 30%; height: auto;">
+                                        </div>
+                                        <div class="modal-header ">
+
+                                            <h3 class="modal-title text-center" style="font-weight: bold"
+                                                id="modalLabel">Отлично!</h3>
+                                        </div>
+                                        <div class="modal-body text-center">
+
+                                            <p>Книга свободна и ты можешь прийти за ней.</p>
+                                            <p>Наш адрес: г. Кропивницкий, переулок Васильевский 10, 5 этаж.</p>
+                                            <p>Лучше предварительно прозвонить и предупредить нас, чтоб не попасть в
+                                                неловкую ситуацию.</p>
+                                            <p>Тел. 099 196 24 69</p>
+                                        </div>
+                                        <div class="modal-footer justify-content-center">
+
+                                            <button type="button" id="okBookButton" class="btn btn-primary"
+                                                data-dismiss="modal" book_id=<%=book.book_id %>>OK</button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+
+
+                            <div class="bookDescription col-xs-12 col-sm-12 col-md-12 hidden-xs hidden-sm">
+                                <h4>О книге</h4>
+                                <hr>
+                                <p id="description">
+                                    <%= book.book_description %>
+                                </p>
                             </div>
                         </div>
-                        <div class="btnBlock col-xs-12 col-sm-12 col-md-12">
-                            <button type="button" class="btnBookID btn-lg btn btn-success">Хочу читать!</button>
-                        </div>
-                        <div class="bookDescription col-xs-12 col-sm-12 col-md-12 hidden-xs hidden-sm">
+                        <div class="bookDescription col-xs-12 col-sm-12 col-md-12 hidden-md hidden-lg">
                             <h4>О книге</h4>
                             <hr>
-                            <p id="description"><%= book.description %></p>
+                            <p class="description">
+                                <%= book.book_description %>
+                            </p>
                         </div>
                     </div>
-                    <div class="bookDescription col-xs-12 col-sm-12 col-md-12 hidden-md hidden-lg">
-                        <h4>О книге</h4>
-                        <hr>
-                        <p class="description"><%= book.description %></p>
-                    </div>
-                </div>
-                <script src="../book-page_files/book.js" defer=""></script>
-                
-            </div>
-        </div>
-    </section>
-
-    <%- include('./includes/footer'); %>
-
-    <div class="sweet-overlay" tabindex="-1" style="opacity: -0.04; display: none;"></div>
-    <div class="sweet-alert hideSweetAlert" data-custom-class="" data-has-cancel-button="false" data-has-confirm-button="true" data-allow-outside-click="false" data-has-done-function="false" data-animation="pop" data-timer="null" style="display: none; margin-top: -169px; opacity: -0.04;">
-        <div class="sa-icon sa-error" style="display: block;">
-            <span class="sa-x-mark">
-        <span class="sa-line sa-left"></span>
-            <span class="sa-line sa-right"></span>
-            </span>
-        </div>
-        <div class="sa-icon sa-warning" style="display: none;">
-            <span class="sa-body"></span>
-            <span class="sa-dot"></span>
-        </div>
-        <div class="sa-icon sa-info" style="display: none;"></div>
-        <div class="sa-icon sa-success" style="display: none;">
-            <span class="sa-line sa-tip"></span>
-            <span class="sa-line sa-long"></span>
-
-            <div class="sa-placeholder"></div>
-            <div class="sa-fix"></div>
-        </div>
-        <div class="sa-icon sa-custom" style="display: none;"></div>
-        <h2>Ооопс!</h2>
-        <p style="display: block;">Ошибка error</p>
-        <fieldset>
-            <input type="text" tabindex="3" placeholder="">
-            <div class="sa-input-error"></div>
-        </fieldset>
-        <div class="sa-button-container">
-            <button class="cancel" tabindex="2" style="display: none; box-shadow: none;">Cancel</button>
-            <div class="sa-confirm-button-container">
-                <button class="confirm" tabindex="1" style="display: inline-block; background-color: rgb(140, 212, 245); box-shadow: rgba(140, 212, 245, 0.8) 0px 0px 2px, rgba(0, 0, 0, 0.05) 0px 0px 0px 1px inset;">OK</button>
-                <div class="la-ball-fall">
-                    <div></div>
-                    <div></div>
-                    <div></div>
                 </div>
             </div>
-        </div>
-    </div>
+        </section>
+
+        <%- include('./includes/footer'); %>
+
+
+
+            <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js"
+                integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN"
+                crossorigin="anonymous"></script>
+            <script src="https://cdn.jsdelivr.net/npm/popper.js@1.12.9/dist/umd/popper.min.js"
+                integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q"
+                crossorigin="anonymous"></script>
+            <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.0.0/dist/js/bootstrap.min.js"
+                integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl"
+                crossorigin="anonymous"></script>
+
+            <script src="/scripts/increment_click/increment_click.js"></script>
+
+
 </body>
 
 </html>
