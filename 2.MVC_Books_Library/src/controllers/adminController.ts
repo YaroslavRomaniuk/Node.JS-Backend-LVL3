@@ -35,7 +35,7 @@ export class AdminController {
     // Function to add a new book along with its authors
     static async addBook(req: Request, res: Response) {
         try {
-            let imagePath = './books-page_files/images/default_image.jpg';
+            let imagePath = '/images_and_styles/images/default_image.jpg';
             if (req.file) {
                 console.log('Uploaded file details:', req.file); // Debugging: log uploaded file details
 
