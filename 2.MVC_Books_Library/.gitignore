@@ -3,3 +3,7 @@ node_modules/
 
 # Environment variables
 .env
+.DS_Store
+dockerlog.txt
+docker-compose.yml
+Dockerfile

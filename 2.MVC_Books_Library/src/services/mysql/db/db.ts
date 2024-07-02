@@ -9,6 +9,8 @@ dotenv.config();
 // Variable to hold the connection pool
 let dbPool: mysql.Pool | undefined;
 
+const delay = (ms: number) => new Promise(resolve => setTimeout(resolve, ms));
+
 // Function to create a connection pool to the MySQL database
 export const createMySQLPool = async (): Promise<void> => {
   try {
@@ -25,6 +27,8 @@ export const createMySQLPool = async (): Promise<void> => {
       waitForConnections: true,
       connectionLimit: 10,
       queueLimit: 0,
+      charset: 'utf8mb4',
+      
     });
 
     console.log("!!! MySQL Pool Created !!!");
@@ -58,14 +62,12 @@ export const setupDatabase = async (): Promise<void> => {
       console.log("Database is already initialized.");
     } else {
       console.log("Database is not initialized.");
-
       const dataBooks = await fs.readFile('./src/services/mysql/sql/books.sql', 'utf8');
       await connection.query(dataBooks);
       
       console.log('Tables have been created successfully.');
     }
-
-    await connection.execute('UPDATE db_initialization SET initialized = TRUE WHERE id = 1');
+    await connection.execute('UPDATE DB_Initialization SET initialized = TRUE WHERE id = 1');
   } catch (err) {
     console.error('An error occurred during database setup:', err);
     throw err;
@@ -85,7 +87,7 @@ export const initialDBSetup = async (): Promise<void> => {
       user: process.env.MYSQL_USER,
       password: process.env.MYSQL_PASSWORD
     });
-    await connection.query(`CREATE DATABASE IF NOT EXISTS ${process.env.MYSQL_DATABASE}`);
+    await connection.query(`CREATE DATABASE IF NOT EXISTS ${process.env.MYSQL_DATABASE} CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci`);
     console.log('Database is created.');
   } catch (err) {
     console.error('An error occurred during initial DB setup:', err);

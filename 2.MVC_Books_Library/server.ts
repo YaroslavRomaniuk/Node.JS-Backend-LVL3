@@ -40,9 +40,16 @@ initApp().catch(console.error);
 const port = process.env.PORT
 
 // Start the server
-server.listen(3000, () => {
+server.listen(port, () => {
     console.log(`Server is running at http://localhost:${port}`);
 });
+
+// Pass environment variables to the templates
+server.use((req, res, next) => {
+    res.locals.env = process.env;
+    next();
+});
+
 
 // Routes
 server.use('/', userRouter);
@@ -53,4 +60,5 @@ const auth = basicAuth({
 });
 
 server.use('/admin/', auth, adminRouter);
+
 

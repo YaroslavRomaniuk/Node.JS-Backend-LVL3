@@ -5,7 +5,7 @@ import path from 'path';
 const storage = multer.diskStorage({
     // Set the destination for uploaded files
     destination: function (req, file, cb) {
-        cb(null, 'public/books-page_files/images'); // Ensure this folder exists
+        cb(null, './public/images_and_styles/images'); // Ensure this folder exists
     },
     // Set the filename for uploaded files
     filename: function (req, file, cb) {

@@ -53,7 +53,7 @@ interface QueryCategories {
       findDeletedBooks: `SELECT book_id FROM Books WHERE deleted_at < NOW() - INTERVAL ${DELETE_INTERVAL}`,
       deleteBookReferences: `DELETE FROM Book_Author WHERE book_id IN (?)`,
       deleteBooks: `DELETE FROM Books WHERE book_id IN (?)`,
-      getBooksQuantity: `SELECT COUNT(*) AS totalBooks FROM books WHERE deleted_at is NULL`
+      getBooksQuantity: `SELECT COUNT(*) AS totalBooks FROM Books WHERE deleted_at is NULL`
     },
     authors: {
       insert: `INSERT INTO Authors (author_name) VALUES (?)`,

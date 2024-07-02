@@ -15,7 +15,7 @@
                     <% books.forEach((book)=> { %>
                         <div data-book-id="<%= book.book_id %>" class="book_item col-xs-6 col-sm-3 col-md-2 col-lg-2">
                             <div class="book">
-                                <a href="http://localhost:3000/book/<%= book.book_id %>">
+                                <a href="http://localhost:<%= env.PORT %>/book/<%= book.book_id %>">
                                     <img src="<%= book.image %>" alt="<%= book.book_title %>">
                                     <div data-title="<%= book.book_title %>" class="blockI" style="height: 46px;">
                                         <div data-book-title="<%= book.book_title %>" class="title size_text">
@@ -26,7 +26,7 @@
                                         </div>
                                     </div>
                                 </a>
-                                <a href="http://localhost:3000/book/<%= book.book_id %>">
+                                <a href="http://localhost:<%= env.PORT %>/book/<%= book.book_id %>">
                                     <button type="button" class="details btn btn-success">Читать</button>
                                 </a>
                             </div>
